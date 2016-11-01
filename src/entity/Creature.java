@@ -59,7 +59,7 @@ public class Creature extends Entity {
 	}
 
 	public void setCurrentHp(int currentHp) {
-		if (currentHp < 0) { this.delete(); }
+		if (currentHp <= 0) { this.delete(); }
 		else { this.currentHp = currentHp; }
 	}
 	

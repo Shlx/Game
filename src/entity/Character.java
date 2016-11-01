@@ -3,12 +3,11 @@ package entity;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
-
 import items.Item;
 import items.Stat;
 import logic.Game;
 import skills.Skill;
+import static util.Utils.*;
 
 public class Character extends Creature {
 	
@@ -76,7 +75,7 @@ public class Character extends Creature {
 	}
 	
 	public void draw() {
-		GL11.glColor3f(0.0f, 0.0f, 1.0f);
+		glColor("blue");
 		super.draw();
 	}
 	

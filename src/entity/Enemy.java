@@ -3,17 +3,16 @@ package entity;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.*;
 
 import items.Drop;
 import items.Stat;
 import logic.Game;
-import logic.Logic;
-import util.Utils;
+import static util.Utils.*;
 
 public class Enemy extends Creature {
-
-	private float[] color = { Utils.random.nextFloat(), Utils.random.nextFloat(), Utils.random.nextFloat() };
+	
+	private float[] color = { random.nextFloat(), random.nextFloat(), random.nextFloat() };
 	private Drop drop;
 
 	public Enemy(float x, float y, float dx, float dy, int width, int height, int age, Map<Stat, Integer> stats,
@@ -29,7 +28,7 @@ public class Enemy extends Creature {
 
 	public void drop() {
 		ArrayList<Drop> dropped = new ArrayList<>();
-		
+
 		// TODO For every drop, check if it should drop
 		
 		// Drop the items that passed the check
@@ -58,7 +57,7 @@ public class Enemy extends Creature {
 	}
 	
 	public void draw() {
-		Utils.setColor(this.getColor());
+		glColor3fv(this.getColor());
 		super.draw();
 		this.drawLifeBar();
 	}
@@ -66,18 +65,20 @@ public class Enemy extends Creature {
 	public void drawLifeBar() {
 		
 		float ratio = (float) this.getCurrentHp() / this.getMaxHp();
+		
+		glLineWidth(2);
 	    
-		Utils.setColor("red");
-		GL11.glBegin(GL11.GL_LINES);
-	        GL11.glVertex2f(x(this.getX()), y(this.getY() - 10));
-			GL11.glVertex2f(x(this.getX() + this.getWidth()), y(this.getY() - 10));
-	    GL11.glEnd();
+		glColor("red");
+		glBegin(GL_LINES);
+	        glVertex2f(x(this.getX()), y(this.getY() - 10));
+			glVertex2f(x(this.getX() + this.getWidth()), y(this.getY() - 10));
+	    glEnd();
 	    
-		Utils.setColor("green");
-		GL11.glBegin(GL11.GL_LINES);
-	        GL11.glVertex2f(x(this.getX()), y(this.getY() - 10));
-			GL11.glVertex2f(x(this.getX() + (this.getWidth()*ratio)), y(this.getY() - 10));
-	    GL11.glEnd();
+		glColor("green");
+		glBegin(GL_LINES);
+	        glVertex2f(x(this.getX()), y(this.getY() - 10));
+			glVertex2f(x(this.getX() + (this.getWidth()*ratio)), y(this.getY() - 10));
+	    glEnd();
 		
 	}
 	

@@ -2,7 +2,9 @@ package util;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
+import logic.Game;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class Utils {
 	
@@ -24,21 +26,43 @@ public class Utils {
 		
 	}
 	
-	public static void setColor(float[] color) {
-		GL11.glColor3f(color[0], color[1], color[2]);
-	}
-	
-	public static void setColor(String color) {
+	public static void glColor(String color) {
 		switch (color.toLowerCase()) {
-			case "green":
-				GL11.glColor3f(0, 1, 0);
-				break;
 			case "red":
-				GL11.glColor3f(1, 0, 0);
+				glColor3f(1, 0, 0);
+				break;
+			case "green":
+				glColor3f(0, 1, 0);
+				break;
+			case "blue":
+				glColor3f(0, 0, 1);
+				break;
+			case "yellow":
+				glColor3f(1, 1, 0);
+				break;
+			case "magenta":
+				glColor3f(1, 0, 1);
+				break;
+			case "cyan":
+				glColor3f(0, 1, 1);
+				break;
+			case "white":
+				glColor3f(1, 1, 1);
 				break;
 			default:
-				GL11.glColor3f(0, 0, 0);
+				glColor3f(0.5f, 0.5f, 0.5f);
 				break;
 		}
 	}
+	
+	// Change game coordinates to GL coordinates
+	
+	public static float x(float x) {
+		return -1.0f + 2.0f * x / Game.WINDOW_X;
+	}
+	
+	public static float y(float y) {
+		return 1.0f - 2.0f * y / Game.WINDOW_Y;
+	}
+	
 }

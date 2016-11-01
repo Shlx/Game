@@ -3,7 +3,7 @@ package items;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.Utils;
+import static util.Utils.*;
 
 public class Drop {
 
@@ -11,7 +11,7 @@ public class Drop {
 	int money;
 	int xp;
 	
-	public static Drop defaultDrop = new Drop(Utils.intBetween(1, 10), Utils.intBetween(10, 20));
+	public static Drop defaultDrop = new Drop(intBetween(1, 10), intBetween(10, 20));
 	
 	public Drop(int money, int xp) {
 		this.money = money;

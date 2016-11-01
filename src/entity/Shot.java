@@ -1,7 +1,7 @@
 package entity;
-import org.lwjgl.opengl.GL11;
 
 import logic.Game;
+import static util.Utils.*;
 
 
 public class Shot extends Entity {
@@ -15,7 +15,7 @@ public class Shot extends Entity {
 	}
 	
 	public void draw() {
-		GL11.glColor3f(1.0f, 0.0f, 0.0f);
+		glColor("red");
 		super.draw();
 	}
 	
@@ -42,6 +42,7 @@ public class Shot extends Entity {
 			if (e instanceof Enemy) {
 				if (this.collide(e)) {
 					((Enemy) e).setCurrentHp(((Enemy) e).getCurrentHp() - 1);
+					this.delete();
 				}
 			}
 		}

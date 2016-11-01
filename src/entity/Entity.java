@@ -1,8 +1,9 @@
 package entity;
 
-import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.*;
 
 import logic.Game;
+import static util.Utils.*;
 
 public class Entity {
 	
@@ -98,18 +99,17 @@ public class Entity {
 	public void draw() {
 		
 		// Clear the screen and depth buffer
-		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 		
 	    // set the color of the quad (R,G,B,A)
  
 	    // draw quad
-	    GL11.glBegin(GL11.GL_QUADS);
-	        GL11.glVertex2f(x(this.getX()), y(this.getY()));
-			GL11.glVertex2f(x(this.getX() + this.getWidth()), y(this.getY()));
-			GL11.glVertex2f(x(this.getX() + this.getWidth()), y(this.getY() + this.getHeight()));
-			GL11.glVertex2f(x(this.getX()), y(this.getY() + this.getHeight()));
-	    GL11.glEnd();
+	    glBegin(GL_QUADS);
+	        glVertex2f(x(this.getX()), y(this.getY()));
+			glVertex2f(x(this.getX() + this.getWidth()), y(this.getY()));
+			glVertex2f(x(this.getX() + this.getWidth()), y(this.getY() + this.getHeight()));
+			glVertex2f(x(this.getX()), y(this.getY() + this.getHeight()));
+	    glEnd();
 		
 	}
 	
@@ -120,14 +120,6 @@ public class Entity {
 				this.getX() < e.getX() + e.getWidth() && this.getX() + this.getWidth() > e.getX();
 				
 		
-	}
-	
-	public static float x(float x) {
-		return -1.0f + 2.0f * x / Game.WINDOW_X;
-	}
-	
-	public static float y(float y) {
-		return 1.0f - 2.0f * y / Game.WINDOW_Y;
 	}
 	
 	public void setPosition(float x, float y) {
