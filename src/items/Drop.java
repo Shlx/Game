@@ -14,6 +14,8 @@ public class Drop {
 	public static Drop defaultDrop = new Drop(intBetween(1, 10), intBetween(10, 20));
 	
 	public Drop(int money, int xp) {
+		// Test, remove this
+		this.items.put(new Item(1, "Test"), 50f);
 		this.money = money;
 		this.xp = xp;
 	}

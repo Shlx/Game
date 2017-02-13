@@ -14,4 +14,10 @@ public enum Stat {
 		put(SPD, 5);
 	}};
 	
+	public static Map<Stat, Integer> defaultItemStats = new HashMap<Stat, Integer>() {{
+		put(ATK, 2);
+		put(STR, 2);
+		put(DEX, 1);
+	}};
+	
 }

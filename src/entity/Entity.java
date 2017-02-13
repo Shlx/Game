@@ -5,9 +5,15 @@ import static org.lwjgl.opengl.GL11.*;
 import logic.Game;
 import static util.Utils.*;
 
+import items.Item;
+
+//Entity root class. Pretty much everything extends this
+
 public class Entity {
 	
+	// Position and speed
 	private float x, y, dx, dy;
+	
 	private int width, height, age;
 
 	public Entity(float x, float y, float dx, float dy, int width, int height, int age) {
@@ -19,30 +25,44 @@ public class Entity {
 		this.height = height;
 		this.age = age;
 		
-		// Add the entity to the 'active' list
+		// Add the entity to the 'spawn' list
 		
 		Game.spawnEntities.add(this);
 	}
+	
+	// Instantiate with default width and height of 20
 	
 	public Entity(float x, float y, float dx, float dy) {
 		this(x, y, dx, dy, 20, 20, 0);
 	}
 	
+	// TODO: What was this for?
+	
+	public Entity(float x, float y, float dx, float dy, Item item) {
+		this(x, y, dx, dy, 10, 10, 0);
+	}
+	
+	// Instantiate with default width, height and speed
+	
 	public Entity(float x, float y) {
 		this(x, y, 0, 0, 20, 20, 0);
 	}
+	
+	// TODO: What would you need this for?
 
 	public Entity() {
 		this(0, 0, 0, 0, 20, 20, 0);
 	}
 	
+	// Add the entity to the 'delete' list
+	
 	public void delete() {
-		
-		// Add the entity to the 'delete' list
 		
 		Game.deleteEntities.add(this);
 		
 	}
+	
+	// Compute next frame, i.e. increase age and move
 	
 	public void nextFrame() {
 		this.setAge(this.getAge() + 1);	
@@ -70,7 +90,11 @@ public class Entity {
 		
 	}
 	
-	public void MoveTowards(float x, float y, float speed) {
+	// Recalculate speed so the entity moves towards some coordinates
+	
+	public void moveTowards(float x, float y, float speed) {
+		
+		// TODO: Something's wrong when entities are moving diagonally (slower than expected)
 		
 		float xDistance = x - this.getX();
 		float yDistance = y - this.getY();
@@ -83,17 +107,19 @@ public class Entity {
 	        
 		} else {
 			
+			// Entity is already at its destination, no need to move
+			
 			this.setSpeed(0, 0);
 			
 		}
 	}
 	
-	public void MoveTowardsCharacter(int speed) {
-		MoveTowards(Game.character.getX(), Game.character.getY(), speed);
+	public void moveTowardsCharacter(int speed) {
+		moveTowards(Game.character.getX(), Game.character.getY(), speed);
 	}
 	
-	public void MoveTowardsMouse(float speed) {
-		MoveTowards(Game.MOUSE_X, Game.MOUSE_Y, speed);
+	public void moveTowardsMouse(float speed) {
+		moveTowards(Game.MOUSE_X, Game.MOUSE_Y, speed);
 	}
 	
 	public void draw() {
@@ -116,8 +142,10 @@ public class Entity {
 	public boolean collide(Entity e) {
 		if (e == null) { return false; }
 		
-		return this.getY() < e.getY() + e.getHeight() && this.getY() + this.getHeight() > e.getY() &&
-				this.getX() < e.getX() + e.getWidth() && this.getX() + this.getWidth() > e.getX();
+		return  this.getY() < e.getY() + e.getHeight() &&
+				this.getY() + this.getHeight() > e.getY() &&
+				this.getX() < e.getX() + e.getWidth() &&
+				this.getX() + this.getWidth() > e.getX();
 				
 		
 	}

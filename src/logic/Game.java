@@ -3,7 +3,7 @@ package logic;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
-import entity.Character;
+import entity.Player;
 import entity.Enemy;
 import entity.Entity;
 import entity.Money;
@@ -37,10 +37,25 @@ public class Game {
 	public static int ENTITY_MAX_AGE = 10000;
 	public static int FRAME_COUNT = 0;
 	
-	public static Character character = null;
+	public static Player character = null;
 	public static int money = 0;
 	public static int xp = 0;
 	public static float SHOT_SPEED = 5;
+	
+	public static boolean PAUSE = false;
+	
+	public static int x = 1;
+	
+	public static int PAUSE_KEY = GLFW_KEY_P;
+	public static int UP_KEY = GLFW_KEY_W;
+	public static int LEFT_KEY = GLFW_KEY_A;
+	public static int DOWN_KEY = GLFW_KEY_S;
+	public static int RIGHT_KEY = GLFW_KEY_D;
+	
+	public static boolean UP_HELD = false;
+	public static boolean LEFT_HELD = false;
+	public static boolean DOWN_HELD = false;
+	public static boolean RIGHT_HELD = false;
 
 	// The window handle
 	private long window;
@@ -93,57 +108,132 @@ public class Game {
         });
         
         glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
-			if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && character != null) {
+			if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && character != null && !PAUSE) {
 				character.shootTowards(MOUSE_X, MOUSE_Y, SHOT_SPEED);
 			}
         });
 
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			
+			// ESC: Close window
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
 				glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
 			
+			// N: Spawn enemy
 			if (key == GLFW_KEY_N && action == GLFW_RELEASE) {
 				new Enemy(MOUSE_X, MOUSE_Y);
 			}
+			
+			// B: Spawn money
 			if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
 				new Money(MOUSE_X, MOUSE_Y, 10);
 			}
+			
+			// V: Spawn player
 			if (key == GLFW_KEY_V && action == GLFW_RELEASE) {
-				character = new Character(MOUSE_X, MOUSE_Y);
+				character = new Player(MOUSE_X, MOUSE_Y);
 			}
 			
-			if (key == GLFW_KEY_W && action == GLFW_PRESS && character != null) {
-				character.setDy(-character.getSpeed());
-			}
-			if (key == GLFW_KEY_A && action == GLFW_PRESS && character != null) {
-				character.setDx(-character.getSpeed());
-			}
-			if (key == GLFW_KEY_S && action == GLFW_PRESS && character != null) {
-				character.setDy(character.getSpeed());
-			}
-			if (key == GLFW_KEY_D && action == GLFW_PRESS && character != null) {
-				character.setDx(character.getSpeed());
+			// P: Pause / Unpause
+			if (key == PAUSE_KEY && action == GLFW_RELEASE) {
+				PAUSE = !PAUSE;
 			}
 			
-			// TODO: Pressing three buttons at once
+			// WASD: Player movement
+			if (key == UP_KEY && action == GLFW_PRESS && character != null) {
+				UP_HELD = true;
+				if (LEFT_HELD || RIGHT_HELD) {
+					if (LEFT_HELD) { character.setDx(-character.getDiagSpeed()); }
+					if (RIGHT_HELD) { character.setDx(character.getDiagSpeed()); }
+					character.setDy(-character.getDiagSpeed());
+				} else {
+					character.setDy(-character.getSpeed());
+				}
+			}
 			
-			if (key == GLFW_KEY_W && action == GLFW_RELEASE && character != null) {
+			if (key == LEFT_KEY && action == GLFW_PRESS && character != null) {
+				LEFT_HELD = true;
+				if (UP_HELD || DOWN_HELD) {
+					if (UP_HELD) { character.setDy(-character.getDiagSpeed()); }
+					if (DOWN_HELD) { character.setDy(character.getDiagSpeed()); }
+					character.setDx(-character.getDiagSpeed());
+				} else {
+					character.setDx(-character.getSpeed());
+				}
+			}
+			
+			if (key == DOWN_KEY && action == GLFW_PRESS && character != null) {
+				DOWN_HELD = true;
+				if (LEFT_HELD || RIGHT_HELD) {
+					if (LEFT_HELD) { character.setDx(-character.getDiagSpeed()); }
+					if (RIGHT_HELD) { character.setDx(character.getDiagSpeed()); }
+					character.setDy(character.getDiagSpeed());
+				} else {
+					character.setDy(character.getSpeed());
+				}
+			}
+			
+			if (key == RIGHT_KEY && action == GLFW_PRESS && character != null) {
+				RIGHT_HELD = true;
+				if (UP_HELD || DOWN_HELD) {
+					if (UP_HELD) { character.setDy(-character.getDiagSpeed()); }
+					if (DOWN_HELD) { character.setDy(character.getDiagSpeed()); }
+					character.setDx(character.getDiagSpeed());
+				} else {
+					character.setDx(character.getSpeed());
+				}
+			}
+			
+			// TODO: Pressing ALL FOUR buttons at once
+			
+			// Stopping player movement
+			if (key == UP_KEY && action == GLFW_RELEASE && character != null) {
+				UP_HELD = false;
 				character.setDy(0);
-			}
-			if (key == GLFW_KEY_A && action == GLFW_RELEASE && character != null) {
-				character.setDx(0);
-			}
-			if (key == GLFW_KEY_S && action == GLFW_RELEASE && character != null) {
-				character.setDy(0);
-			}
-			if (key == GLFW_KEY_D && action == GLFW_RELEASE && character != null) {
-				character.setDx(0);
+				
+				if (LEFT_HELD || RIGHT_HELD) {
+					if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+					if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
+				}
+				
+				if (DOWN_HELD) { character.setDy(character.getSpeed()); }
 			}
 			
-			// DEBUG
-			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
-				System.out.println("Debug!");
+			if (key == LEFT_KEY && action == GLFW_RELEASE && character != null) {
+				LEFT_HELD = false;
+				character.setDx(0);
+				
+				if (UP_HELD || DOWN_HELD) {
+					if (UP_HELD) { character.setDy(-character.getSpeed()); }
+					if (DOWN_HELD) { character.setDy(character.getSpeed()); }
+				}
+				
+				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
+			}
+			
+			if (key == DOWN_KEY && action == GLFW_RELEASE && character != null) {
+				DOWN_HELD = false;
+				character.setDy(0);
+				
+				if (LEFT_HELD || RIGHT_HELD) {
+					if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+					if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
+				}
+				
+				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+			}
+			
+			if (key == RIGHT_KEY && action == GLFW_RELEASE && character != null) {
+				RIGHT_HELD = false;
+				character.setDx(0);
+				
+				if (UP_HELD || DOWN_HELD) {
+					if (UP_HELD) { character.setDy(-character.getSpeed()); }
+					if (DOWN_HELD) { character.setDy(character.getSpeed()); }
+				}
+				
+				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
 			}
 		});
 

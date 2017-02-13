@@ -6,6 +6,7 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL11.*;
 
 import items.Drop;
+import items.Item;
 import items.Stat;
 import logic.Game;
 import static util.Utils.*;
@@ -27,18 +28,13 @@ public class Enemy extends Creature {
 	}
 
 	public void drop() {
-		ArrayList<Drop> dropped = new ArrayList<>();
 
-		// TODO For every drop, check if it should drop
-		
-		// Drop the items that passed the check
-		
-		for (Drop drop : dropped) {
+		for (Item i : this.getDrop().getItems().keySet()) {
 			
-			// TODO Drop it
+			// Drop items that pass the roll
 			
 		}
-		
+
 		// Award XP and drop money
 		
 		Game.xp += this.getDrop().getXp();		
@@ -54,6 +50,14 @@ public class Enemy extends Creature {
 		Game.deleteEntities.add(this);
 		this.drop();
 		
+	}
+	
+	public void moveTowardsCharacter() {
+		super.moveTowardsCharacter(getSpeed());
+	}
+	
+	public void moveTowardsMouse() {
+		super.moveTowardsMouse(getSpeed());
 	}
 	
 	public void draw() {

@@ -55,7 +55,7 @@ public class Utils {
 		}
 	}
 	
-	// Change game coordinates to GL coordinates
+	// Convert game coordinates to GL coordinates
 	
 	public static float x(float x) {
 		return -1.0f + 2.0f * x / Game.WINDOW_X;
