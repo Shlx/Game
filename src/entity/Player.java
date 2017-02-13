@@ -94,10 +94,6 @@ public class Player extends Creature {
 //			}
 		}
 	}
-	
-	public float getDiagSpeed() {
-		return (float) Math.sqrt(getSpeed() * 2);
-	}
 
 	////////// GETTERS / SETTERS //////////
 	

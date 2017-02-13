@@ -53,11 +53,11 @@ public class Enemy extends Creature {
 	}
 	
 	public void moveTowardsCharacter() {
-		super.moveTowardsCharacter(getSpeed());
+		super.moveTowardsCharacter(getStraightSpeed());
 	}
 	
 	public void moveTowardsMouse() {
-		super.moveTowardsMouse(getSpeed());
+		super.moveTowardsMouse(getStraightSpeed());
 	}
 	
 	public void draw() {

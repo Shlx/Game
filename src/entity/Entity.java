@@ -114,7 +114,7 @@ public class Entity {
 		}
 	}
 	
-	public void moveTowardsCharacter(int speed) {
+	public void moveTowardsCharacter(float speed) {
 		moveTowards(Game.character.getX(), Game.character.getY(), speed);
 	}
 	

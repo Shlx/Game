@@ -56,6 +56,7 @@ public class Game {
 	public static boolean LEFT_HELD = false;
 	public static boolean DOWN_HELD = false;
 	public static boolean RIGHT_HELD = false;
+	public static boolean DIAG_MOVE = false;
 
 	// The window handle
 	private long window;
@@ -143,97 +144,84 @@ public class Game {
 			// WASD: Player movement
 			if (key == UP_KEY && action == GLFW_PRESS && character != null) {
 				UP_HELD = true;
-				if (LEFT_HELD || RIGHT_HELD) {
-					if (LEFT_HELD) { character.setDx(-character.getDiagSpeed()); }
-					if (RIGHT_HELD) { character.setDx(character.getDiagSpeed()); }
-					character.setDy(-character.getDiagSpeed());
-				} else {
-					character.setDy(-character.getSpeed());
-				}
+				diag();
+				
+				character.setDy(-character.getSpeed());
+				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
 			}
 			
 			if (key == LEFT_KEY && action == GLFW_PRESS && character != null) {
 				LEFT_HELD = true;
-				if (UP_HELD || DOWN_HELD) {
-					if (UP_HELD) { character.setDy(-character.getDiagSpeed()); }
-					if (DOWN_HELD) { character.setDy(character.getDiagSpeed()); }
-					character.setDx(-character.getDiagSpeed());
-				} else {
-					character.setDx(-character.getSpeed());
-				}
+				diag();
+				
+				character.setDx(-character.getSpeed());
+				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+				if (DOWN_HELD) { character.setDy(character.getSpeed()); }
 			}
 			
 			if (key == DOWN_KEY && action == GLFW_PRESS && character != null) {
 				DOWN_HELD = true;
-				if (LEFT_HELD || RIGHT_HELD) {
-					if (LEFT_HELD) { character.setDx(-character.getDiagSpeed()); }
-					if (RIGHT_HELD) { character.setDx(character.getDiagSpeed()); }
-					character.setDy(character.getDiagSpeed());
-				} else {
-					character.setDy(character.getSpeed());
-				}
+				diag();
+				
+				character.setDy(character.getSpeed());
+				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
 			}
 			
 			if (key == RIGHT_KEY && action == GLFW_PRESS && character != null) {
 				RIGHT_HELD = true;
-				if (UP_HELD || DOWN_HELD) {
-					if (UP_HELD) { character.setDy(-character.getDiagSpeed()); }
-					if (DOWN_HELD) { character.setDy(character.getDiagSpeed()); }
-					character.setDx(character.getDiagSpeed());
-				} else {
-					character.setDx(character.getSpeed());
-				}
+				diag();
+				
+				character.setDx(character.getSpeed());
+				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+				if (DOWN_HELD) { character.setDy(character.getSpeed()); }
+				
 			}
-			
-			// TODO: Pressing ALL FOUR buttons at once
 			
 			// Stopping player movement
 			if (key == UP_KEY && action == GLFW_RELEASE && character != null) {
 				UP_HELD = false;
+				diag();
+				
 				character.setDy(0);
+				if (DOWN_HELD) { character.setDy(character.getSpeed()); }			
+				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
 				
-				if (LEFT_HELD || RIGHT_HELD) {
-					if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
-					if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
-				}
-				
-				if (DOWN_HELD) { character.setDy(character.getSpeed()); }
 			}
 			
 			if (key == LEFT_KEY && action == GLFW_RELEASE && character != null) {
 				LEFT_HELD = false;
+				diag();
+				
 				character.setDx(0);
-				
-				if (UP_HELD || DOWN_HELD) {
-					if (UP_HELD) { character.setDy(-character.getSpeed()); }
-					if (DOWN_HELD) { character.setDy(character.getSpeed()); }
-				}
-				
 				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
+				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+				if (DOWN_HELD) { character.setDy(character.getSpeed()); }
+				
 			}
 			
 			if (key == DOWN_KEY && action == GLFW_RELEASE && character != null) {
 				DOWN_HELD = false;
+				diag();
+				
 				character.setDy(0);
-				
-				if (LEFT_HELD || RIGHT_HELD) {
-					if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
-					if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
-				}
-				
 				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
+				
 			}
 			
 			if (key == RIGHT_KEY && action == GLFW_RELEASE && character != null) {
 				RIGHT_HELD = false;
+				diag();
+				
 				character.setDx(0);
-				
-				if (UP_HELD || DOWN_HELD) {
-					if (UP_HELD) { character.setDy(-character.getSpeed()); }
-					if (DOWN_HELD) { character.setDy(character.getSpeed()); }
-				}
-				
 				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
+				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+				if (DOWN_HELD) { character.setDy(character.getSpeed()); }
+				
 			}
 		});
 
@@ -285,6 +273,12 @@ public class Game {
 			glfwPollEvents();
 			
 		}
+	}
+	
+	// Detect if the player is moving diagonally
+	private static void diag() {
+		if ((UP_HELD || DOWN_HELD) && (LEFT_HELD || RIGHT_HELD)) { DIAG_MOVE = true; }
+		else { DIAG_MOVE = false; }
 	}
 
 	public static void main(String[] args) {

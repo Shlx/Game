@@ -3,6 +3,7 @@ package entity;
 import java.util.Map;
 
 import items.Stat;
+import logic.Game;
 
 public class Creature extends Entity {
 
@@ -32,8 +33,17 @@ public class Creature extends Entity {
 		super.draw();
 	}
 	
-	public int getSpeed() {
+	public float getSpeed() {
+		if (Game.DIAG_MOVE) { return getDiagSpeed(); }
+		else { return getStraightSpeed(); }
+	}
+	
+	public int getStraightSpeed() {
 		return this.getStats().get(Stat.SPD);
+	}
+	
+	public float getDiagSpeed() {
+		return (float) Math.sqrt(getStraightSpeed() * 2);
 	}
 	
 	public int getMaxHp() {
