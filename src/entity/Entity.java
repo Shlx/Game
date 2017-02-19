@@ -1,6 +1,8 @@
 package entity;
 
 import logic.Game;
+import tile.Tile;
+
 import static util.Utils.*;
 
 import items.Item;
@@ -75,6 +77,29 @@ public class Entity {
 		
 		int sizeX = Game.map.getSizeX();
 		int sizeY = Game.map.getSizeY();
+		
+		// Collision with walls etc.
+		// TODO: Make this good
+		
+		for (Object o : Game.collisionEntities) {
+			
+			Tile t = null;
+			Entity e = null;
+			
+			if (o instanceof Entity) { 
+				e = (Entity) o;
+				
+			} else if (o instanceof Tile) {
+				t = (Tile) o;
+				
+			}
+			
+			if (this.collide(e) || this.collide(t)) {
+				this.dx = 0;
+				this.dy = 0;
+			}
+			
+		}
 			
 		// Move the entity by its speed
 		
@@ -82,7 +107,7 @@ public class Entity {
 		this.setY(this.getY() + this.getDy());
 	
 		// Don't let it move out of bounds
-		
+
 		if (this.getX() < 1) { this.setX(1); }
 		if (this.getX() + this.getWidth() > sizeX) { this.setX(sizeX - this.getWidth()); }
 		
@@ -141,15 +166,24 @@ public class Entity {
 		
 	}
 	
+	// TODO: Make superclass of Entity and Tile
+	
 	public boolean collide(Entity e) {
 		if (e == null) { return false; }
 		
-		return  this.getY() < e.getY() + e.getHeight() &&
-				this.getY() + this.getHeight() > e.getY() &&
-				this.getX() < e.getX() + e.getWidth() &&
-				this.getX() + this.getWidth() > e.getX();
-				
+		return  this.getY() <= e.getY() + e.getHeight() &&
+				this.getY() + this.getHeight() >= e.getY() &&
+				this.getX() <= e.getX() + e.getWidth() &&
+				this.getX() + this.getWidth() >= e.getX();	
+	}
+	
+	public boolean collide(Tile t) {
+		if (t == null) { return false; }
 		
+		return  this.getY() <= t.getY() + t.getSize() &&
+				this.getY() + this.getHeight() >= t.getY() &&
+				this.getX() <= t.getX() + t.getSize() &&
+				this.getX() + this.getWidth() >= t.getX();	
 	}
 	
 	public void setPosition(float x, float y) {

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class Game {
 	
-	public static boolean DEBUG = 1 == 1;
+	public static boolean DEBUG = 1 == 0;
 	public static boolean RUN_SERVER = 1 == 0;
 	static Socket socket;
 	
@@ -39,6 +39,7 @@ public class Game {
 	public static ArrayList<Entity> activeEntities = new ArrayList<>();
 	public static ArrayList<Entity> deleteEntities = new ArrayList<>();
 	public static ArrayList<Entity> spawnEntities = new ArrayList<>();
+	public static ArrayList<Object> collisionEntities = new ArrayList<>();
 	
 	public static int ENTITY_MAX_AGE = 10000;
 	public static int FRAME_COUNT = 0;
@@ -138,7 +139,7 @@ public class Game {
 			// V: Spawn player
 			if (key == GLFW_KEY_V && action == GLFW_RELEASE) {
 				//character = new Player(MOUSE_X, MOUSE_Y);
-				character = new Player(0, 0);
+				character = new Player(100, 100);
 			}
 			
 			// P: Pause / Unpause

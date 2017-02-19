@@ -1,23 +1,25 @@
 package map;
 
-import static util.Utils.*;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import logic.Game;
+import tile.Floor;
+import tile.Tile;
+import tile.Wall;
 
 public class Map {
 
 	private static int xTemp, yTemp;
 	
 	private int xTileCount, yTileCount;
-	private char[] tiles;
+	private ArrayList<Tile> tiles;
 	
 	public Map(String file) {
-		this.tiles = fileToChars(file);
+		this.tiles = fileToTiles(file);
 		this.xTileCount = xTemp;
 		this.yTileCount = yTemp;
 		
@@ -25,24 +27,14 @@ public class Map {
 	
 	public void draw() {
 		
-		for (int y = 0; y < this.yTileCount; y++) {
-			for (int x = 0; x < this.xTileCount; x++) {
-				
-				// Draw a grey rectangle if there's a wall
-				if (this.tiles[y * xTileCount + x] == 'W') { glColor("grey"); }
-				
-				// Draw a white rectangle otherwise
-				else { glColor("white"); }
-				
-				// Add or subtract values later on for scrolling
-				drawSquare(Game.TILE_SIZE * x, Game.TILE_SIZE * y, Game.TILE_SIZE, Game.TILE_SIZE);
-			}
+		for (Tile tile : tiles) {
+			tile.draw();
 		}
 	}
 	
-	public static char[] fileToChars(String file) {
+	public static ArrayList<Tile> fileToTiles(String file) {
 		
-		String ret = new String();
+		ArrayList<Tile> ret = new ArrayList<>();
 		xTemp = 0;
 		yTemp = 0;
 		
@@ -52,10 +44,34 @@ public class Map {
 			BufferedReader br = new BufferedReader(fr);
 		
 			String str;
+			int line = 0;
 			while ((str = br.readLine()) != null) {
-			        ret += str;
-			        yTemp++;
-			        xTemp = str.length();
+				
+				int index = 0;
+				for (char c : str.toCharArray()) {
+				    	switch (c) {
+				    	
+				    		case 'W':
+				    			Wall wall = new Wall(index * Game.TILE_SIZE, line * Game.TILE_SIZE);
+				    			Game.collisionEntities.add(wall);
+				    			ret.add(wall);
+				    			break;
+				    			
+				    		case 'O':
+				    			ret.add(new Floor(index * Game.TILE_SIZE, line * Game.TILE_SIZE));
+				    			break;
+				    			
+				    		default:
+				    			break;
+				    	}
+				    	
+				    	index++;
+				    			
+				}
+				
+				yTemp++;
+				xTemp = str.length();
+				line++;
 			}
 			
 			br.close();
@@ -68,7 +84,7 @@ public class Map {
 			e.printStackTrace();
 		}
 		
-		return ret.toCharArray();
+		return ret;
 	}
 	
 	public int getSizeX() {
@@ -97,11 +113,11 @@ public class Map {
 		this.yTileCount = yTileCount;
 	}
 
-	public char[] getTiles() {
+	public ArrayList<Tile> getTiles() {
 		return tiles;
 	}
 
-	public void setTiles(char[] tiles) {
+	public void setTiles(ArrayList<Tile> tiles) {
 		this.tiles = tiles;
 	}
 	

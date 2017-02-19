@@ -2,7 +2,6 @@ package util;
 
 import java.util.Random;
 
-import logic.Game;
 import logic.Logic;
 
 import static org.lwjgl.opengl.GL11.*;
