@@ -1,7 +1,5 @@
 package entity;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import logic.Game;
 import static util.Utils.*;
 
@@ -74,6 +72,9 @@ public class Entity {
 	}
 	
 	public void move() {
+		
+		int sizeX = Game.map.getSizeX();
+		int sizeY = Game.map.getSizeY();
 			
 		// Move the entity by its speed
 		
@@ -82,11 +83,11 @@ public class Entity {
 	
 		// Don't let it move out of bounds
 		
-		if (this.getX() < 0) { this.setX(0); }
-		if (this.getX() + this.getWidth() > Game.SIZE_X) { this.setX(Game.SIZE_X - this.getWidth()); }
+		if (this.getX() < 1) { this.setX(1); }
+		if (this.getX() + this.getWidth() > sizeX) { this.setX(sizeX - this.getWidth()); }
 		
-		if (this.getY() < 0) { this.setY(0); }
-		if (this.getY() + this.getHeight() > Game.SIZE_Y) { this.setY(Game.SIZE_Y - this.getHeight()); }
+		if (this.getY() < 1) { this.setY(1); }
+		if (this.getY() + this.getHeight() > sizeY) { this.setY(sizeY - this.getHeight()); }
 		
 	}
 	
@@ -130,12 +131,13 @@ public class Entity {
 	    // set the color of the quad (R,G,B,A)
  
 	    // draw quad
-	    glBegin(GL_QUADS);
-	        glVertex2f(x(this.getX()), y(this.getY()));
-			glVertex2f(x(this.getX() + this.getWidth()), y(this.getY()));
-			glVertex2f(x(this.getX() + this.getWidth()), y(this.getY() + this.getHeight()));
-			glVertex2f(x(this.getX()), y(this.getY() + this.getHeight()));
-	    glEnd();
+		drawSquare(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+//	    glBegin(GL_QUADS);
+//	        glVertex2f(this.getX(), this.getY());
+//			glVertex2f(this.getX() + this.getWidth(), this.getY());
+//			glVertex2f(this.getX() + this.getWidth(), this.getY() + this.getHeight());
+//			glVertex2f(this.getX(), this.getY() + this.getHeight());
+//	    glEnd();
 		
 	}
 	

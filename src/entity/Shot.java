@@ -28,9 +28,9 @@ public class Shot extends Entity {
 	
 		// Don't let it move out of bounds
 		
-		if (this.getX() < 0 || this.getX() + this.getWidth() > Game.SIZE_X) { this.delete(); }
+		if (this.getX() < 0 || this.getX() + this.getWidth() > Game.map.getSizeX()) { this.delete(); }
 		
-		if (this.getY() < 0 || this.getY() + this.getHeight() > Game.SIZE_Y) { this.delete(); }
+		if (this.getY() < 0 || this.getY() + this.getHeight() > Game.map.getSizeY()) { this.delete(); }
 		
 	}
 	

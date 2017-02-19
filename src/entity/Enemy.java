@@ -1,6 +1,5 @@
 package entity;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -73,16 +72,10 @@ public class Enemy extends Creature {
 		glLineWidth(2);
 	    
 		glColor("red");
-		glBegin(GL_LINES);
-	        glVertex2f(x(this.getX()), y(this.getY() - 10));
-			glVertex2f(x(this.getX() + this.getWidth()), y(this.getY() - 10));
-	    glEnd();
+		drawLineH(this.getX(), this.getY() - 10, this.getWidth());
 	    
 		glColor("green");
-		glBegin(GL_LINES);
-	        glVertex2f(x(this.getX()), y(this.getY() - 10));
-			glVertex2f(x(this.getX() + (this.getWidth()*ratio)), y(this.getY() - 10));
-	    glEnd();
+		drawLineH(this.getX(), this.getY() - 10, (int) (this.getWidth() * ratio));
 		
 	}
 	

@@ -1,9 +1,13 @@
 package logic;
 
+import org.lwjgl.Version;
 import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
+import static org.lwjgl.system.MemoryStack.*;
 
 import entity.Player;
+import map.Map;
 import entity.Enemy;
 import entity.Entity;
 import entity.Money;
@@ -13,11 +17,15 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
+import java.net.Socket;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 public class Game {
 	
 	public static boolean DEBUG = 1 == 1;
+	public static boolean RUN_SERVER = 1 == 0;
+	static Socket socket;
 	
 	public static int WINDOW_X = 800;
 	public static int WINDOW_Y = 800;
@@ -32,19 +40,17 @@ public class Game {
 	public static ArrayList<Entity> deleteEntities = new ArrayList<>();
 	public static ArrayList<Entity> spawnEntities = new ArrayList<>();
 	
-	public static int SIZE_X = 800;
-	public static int SIZE_Y = 800;
 	public static int ENTITY_MAX_AGE = 10000;
 	public static int FRAME_COUNT = 0;
+	public static float SHOT_SPEED = 5;
+	public static int TILE_SIZE = 40;
 	
+	public static Map map = null;
 	public static Player character = null;
 	public static int money = 0;
 	public static int xp = 0;
-	public static float SHOT_SPEED = 5;
 	
-	public static boolean PAUSE = false;
-	
-	public static int x = 1;
+	public static boolean PAUSED = false;
 	
 	public static int PAUSE_KEY = GLFW_KEY_P;
 	public static int UP_KEY = GLFW_KEY_W;
@@ -62,20 +68,18 @@ public class Game {
 	private long window;
 
 	public void run() {
+		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
-		try {
-			
-			init();
-			loop();
+		init();
+		loop();
 
-			// Free the window callbacks and destroy the window
-			glfwFreeCallbacks(window);
-			glfwDestroyWindow(window);
-		} finally {
-			// Terminate GLFW and free the error callback
-			glfwTerminate();
-			glfwSetErrorCallback(null).free();
-		}
+		// Free the window callbacks and destroy the window
+		glfwFreeCallbacks(window);
+		glfwDestroyWindow(window);
+		
+		// Terminate GLFW and free the error callback
+		glfwTerminate();
+		glfwSetErrorCallback(null).free();
 	}
 
 	private void init() {
@@ -92,7 +96,7 @@ public class Game {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(WINDOW_X, WINDOW_Y, "Hello World!", NULL, NULL);
+		window = glfwCreateWindow(WINDOW_X, WINDOW_Y, "Game", NULL, NULL);
 		
 		if (window == NULL) { throw new RuntimeException("Failed to create the GLFW window"); }
 		
@@ -103,13 +107,13 @@ public class Game {
             //MOUSE_DX += (int)xpos - MOUSE_X;
             //MOUSE_DY += (int)xpos - MOUSE_Y;
             // Set new positions of x and y
-            MOUSE_X = (int) xpos;
-            MOUSE_Y = (int) ypos;
+            MOUSE_X = (int) xpos + Logic.xScroll;
+            MOUSE_Y = (int) ypos + Logic.yScroll;
      
         });
         
         glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
-			if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && character != null && !PAUSE) {
+			if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && character != null && !PAUSED) {
 				character.shootTowards(MOUSE_X, MOUSE_Y, SHOT_SPEED);
 			}
         });
@@ -133,12 +137,14 @@ public class Game {
 			
 			// V: Spawn player
 			if (key == GLFW_KEY_V && action == GLFW_RELEASE) {
-				character = new Player(MOUSE_X, MOUSE_Y);
+				//character = new Player(MOUSE_X, MOUSE_Y);
+				character = new Player(0, 0);
 			}
 			
 			// P: Pause / Unpause
-			if (key == PAUSE_KEY && action == GLFW_RELEASE) {
-				PAUSE = !PAUSE;
+			if (key == PAUSE_KEY && action == GLFW_PRESS) {
+				PAUSED = !PAUSED;
+				if (DEBUG && PAUSED) { System.out.println("\n----- GAME IS PAUSED -----\n"); }
 			}
 			
 			// WASD: Player movement
@@ -225,19 +231,40 @@ public class Game {
 			}
 		});
 
-		// Get the resolution of the primary monitor
-		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		// Center our window
-		glfwSetWindowPos(
-			window,
-			(vidmode.width() - WINDOW_X) / 2,
-			(vidmode.height() - WINDOW_Y) / 2
-		);
+		try (MemoryStack stack = stackPush()) {
+			IntBuffer pWidth = stack.mallocInt(1); // int*
+			IntBuffer pHeight = stack.mallocInt(1); // int*
+
+			// Get the window size passed to glfwCreateWindow
+			glfwGetWindowSize(window, pWidth, pHeight);
+
+			// Get the resolution of the primary monitor
+			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+			// Center the window
+			glfwSetWindowPos(
+				window,
+				(vidmode.width() - pWidth.get(0)) / 2,
+				(vidmode.height() - pHeight.get(0)) / 2
+			);
+		} // the stack frame is popped automatically
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 		// Enable v-sync
 		glfwSwapInterval(1);
+
+		// Make the window visible
+		glfwShowWindow(window);
+		
+		// -----
+		
+		GL.createCapabilities();
+		glViewport(0, 0, WINDOW_X, WINDOW_Y);
+		// Coordinates from 1 to WINDOW_X / Y
+		glOrtho(1, WINDOW_X, WINDOW_Y, 1, 1.0, -1.0);
+		
+		// -----
 		
 		// Make the window visible
 		glfwShowWindow(window);
@@ -249,11 +276,7 @@ public class Game {
 		// LWJGL detects the context that is current in the current thread,
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
-		GL.createCapabilities();
-
-		/*glOrtho(100.0, 100.0, 100.0, 100.0, 1.0, -1.0);
-		glViewport(0, 0, WINDOW_X, WINDOW_Y);
-		glDisable(GL_TEXTURE_2D);*/
+		//GL.createCapabilities();
 		
 		// Set the clear color
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -263,6 +286,8 @@ public class Game {
 		while (!glfwWindowShouldClose(window)) {
 			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+			
+			if (map == null) { map = new Map("map_1.txt"); }
 			
 			Logic.nextFrame();
 			
@@ -277,11 +302,19 @@ public class Game {
 	
 	// Detect if the player is moving diagonally
 	private static void diag() {
-		if ((UP_HELD || DOWN_HELD) && (LEFT_HELD || RIGHT_HELD)) { DIAG_MOVE = true; }
-		else { DIAG_MOVE = false; }
+		DIAG_MOVE = ((UP_HELD || DOWN_HELD) && (LEFT_HELD || RIGHT_HELD)) ? true : false;
 	}
 
 	public static void main(String[] args) {
+		
+		if (RUN_SERVER) { 
+			try {
+				socket = new Socket("127.0.0.1", 9099);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		new Game().run();
 	}
 

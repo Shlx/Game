@@ -3,6 +3,7 @@ package util;
 import java.util.Random;
 
 import logic.Game;
+import logic.Logic;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -49,20 +50,38 @@ public class Utils {
 			case "white":
 				glColor3f(1, 1, 1);
 				break;
-			default:
+			case "grey":
 				glColor3f(0.5f, 0.5f, 0.5f);
+				break;
+			default:
+				glColor3f(0, 0, 0);
 				break;
 		}
 	}
 	
-	// Convert game coordinates to GL coordinates
-	
-	public static float x(float x) {
-		return -1.0f + 2.0f * x / Game.WINDOW_X;
+	public static void drawSquare (float x, float y, int width, int height) {
+		
+		int xScroll = Logic.xScroll;
+		int yScroll = Logic.yScroll;
+		
+		glBegin(GL_QUADS);
+	        glVertex2f(x - xScroll, y - yScroll);
+			glVertex2f(x + width - xScroll, y - yScroll);
+			glVertex2f(x + width - xScroll, y + height - yScroll);
+			glVertex2f(x - xScroll, y + height - yScroll);
+		glEnd();
 	}
 	
-	public static float y(float y) {
-		return 1.0f - 2.0f * y / Game.WINDOW_Y;
+	public static void drawLineH (float x, float y, int length) {
+		
+		int xScroll = Logic.xScroll;
+		int yScroll = Logic.yScroll;
+		
+		glBegin(GL_LINES);
+        	glVertex2f(x - xScroll, y - yScroll);
+			glVertex2f(x + length - xScroll, y - yScroll);
+		glEnd();
+		
 	}
 	
 }
