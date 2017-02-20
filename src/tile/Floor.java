@@ -6,8 +6,4 @@ public class Floor extends Tile {
 		super(x, y, true);
 	}
 	
-	public Floor() {
-		super(true);
-	}
-	
 }

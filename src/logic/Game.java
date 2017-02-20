@@ -7,7 +7,9 @@ import org.lwjgl.system.MemoryStack;
 import static org.lwjgl.system.MemoryStack.*;
 
 import entity.Player;
+import gameobject.GameObject;
 import map.Map;
+import renderer.Renderer;
 import entity.Enemy;
 import entity.Entity;
 import entity.Money;
@@ -39,7 +41,7 @@ public class Game {
 	public static ArrayList<Entity> activeEntities = new ArrayList<>();
 	public static ArrayList<Entity> deleteEntities = new ArrayList<>();
 	public static ArrayList<Entity> spawnEntities = new ArrayList<>();
-	public static ArrayList<Object> collisionEntities = new ArrayList<>();
+	public static ArrayList<GameObject> collisionEntities = new ArrayList<>();
 	
 	public static int ENTITY_MAX_AGE = 10000;
 	public static int FRAME_COUNT = 0;
@@ -108,8 +110,8 @@ public class Game {
             //MOUSE_DX += (int)xpos - MOUSE_X;
             //MOUSE_DY += (int)xpos - MOUSE_Y;
             // Set new positions of x and y
-            MOUSE_X = (int) xpos + Logic.xScroll;
-            MOUSE_Y = (int) ypos + Logic.yScroll;
+            MOUSE_X = (int) xpos + Renderer.xScroll;
+            MOUSE_Y = (int) ypos + Renderer.yScroll;
      
         });
         
@@ -291,6 +293,7 @@ public class Game {
 			if (map == null) { map = new Map("map_1.txt"); }
 			
 			Logic.nextFrame();
+			Renderer.nextFrame();
 			
 			glfwSwapBuffers(window); // swap the color buffers
 			

@@ -10,82 +10,25 @@ import entity.Enemy;
 public class Logic {
 	
 	static long tStart = System.currentTimeMillis();
-	public static int xScroll, yScroll;
 	
 	public static void nextFrame() {
 		
-		if (Game.PAUSED) { Game.FRAME_COUNT++; }
+		if (!Game.PAUSED) { Game.FRAME_COUNT++; }
 		
 		if (Game.DEBUG) { gameDebug(); }
 		
-		xScroll = xScroll();
-		yScroll = yScroll();
-		
-		Game.map.draw();
-		
-		// Handle updating active entities		
-		activeEntities();
-		
-		// Handle deleting entities		
-		deleteEntities();
-		
-		// Handle spawning entities
+		// 1. Spawn new entities
 		spawnEntities();
 		
-	}
-	
-	public static void activeEntities() {
-		int i = 1;
-		for (Entity entity : Game.activeEntities) {
-			
-		    if (Game.DEBUG) { entityDebug(i++, entity); }
-			
-			if (entity instanceof Enemy) {
-				Enemy enemy = (Enemy) entity;
-				
-				// Testing purposes
-				//enemy.setCurrentHp(enemy.getCurrentHp() - 1);
-				
-				if (Game.character != null) {
-					enemy.moveTowardsCharacter();
-				} else {
-					enemy.moveTowardsMouse();
-				}
-				
-			}
-			
-			entity.checkCollisions(); //TODO Shot x Enemy
-			
-			// Do not calculate the next frame if the game is paused
-			if (!Game.PAUSED) { entity.nextFrame(); }
-			
-			if (entity.getAge() > Game.ENTITY_MAX_AGE) {
-				
-				entity.delete();
-				
-			}
-			
-			entity.draw();
-			
-		}
+		// 2. Handle updating active entities		
+		activeEntities();
 		
-		// So the character ends up on top	
-		if (Game.character != null) { Game.character.draw(); }
+		// 3. Check collisions between entities
+		checkCollisions();
 		
-	}
-	
-	public static void deleteEntities() {
+		// 4. Handle deleting entities		
+		deleteEntities();
 		
-		for (Entity entity : Game.deleteEntities) {
-			
-			Game.activeEntities.remove(entity);
-			
-			if (entity instanceof Enemy) {
-				
-				Enemy enemy = (Enemy) entity;
-				
-			}		
-		}
 	}
 	
 	public static void spawnEntities() {
@@ -101,31 +44,48 @@ public class Logic {
 		}		
 	}
 	
-	// Calculate how much the screen should be scrolled horizontally
-	private static int xScroll() {
-		if (Game.character == null) { return 0; }
-		else { return 
-				Math.max(
-					0, 
-					Math.min(
-						(int) Game.character.getCenterX() - Game.WINDOW_X / 2,
-						Game.map.getSizeX() - Game.WINDOW_X
-					)
-				);
+	public static void activeEntities() {
+		int i = 1;
+		for (Entity entity : Game.activeEntities) {
+			
+		    if (Game.DEBUG) { entityDebug(i++, entity); }
+			
+			if (entity instanceof Enemy) {
+				Enemy enemy = (Enemy) entity;
+				
+				if (Game.character != null) {
+					enemy.moveTowardsCharacter();
+				} else {
+					enemy.moveTowardsMouse();
+				}
+				
+			}
+			
+			// Do not calculate the next frame if the game is paused
+			if (!Game.PAUSED) { entity.nextFrame(); }
+			
 		}
+		
 	}
 	
-	// Calculate how much the screen should be scrolled vertically
-	private static int yScroll() {
-		if (Game.character == null) { return 0; }
-		else { return
-				Math.max(
-					0,
-					Math.min(
-						(int) Game.character.getCenterY() - Game.WINDOW_Y / 2,
-						Game.map.getSizeY() - Game.WINDOW_Y
-					)
-				);
+	public static void checkCollisions() {
+		
+		for (Entity entity : Game.activeEntities) {
+			entity.checkCollisions();
+		}
+		
+	}
+	
+	public static void deleteEntities() {
+		
+		Iterator<Entity> iterator = Game.deleteEntities.listIterator();
+		while (iterator.hasNext()) {
+		
+			Entity entity = iterator.next();
+			
+			Game.activeEntities.remove(entity);
+			
+			iterator.remove();		
 		}
 	}
 	
@@ -140,7 +100,7 @@ public class Logic {
 		
 		System.out.println("Frame " + Game.FRAME_COUNT + " (" + elapsedSeconds + "s):");
 		System.out.println("\tMoney: " + Game.money + ", XP: " + Game.xp);
-		System.out.println("\tEntities: " + Game.activeEntities.size());
+		System.out.println("\tEntities: a: " + Game.activeEntities.size() + " d: " + Game.deleteEntities.size() + " s: " + Game.spawnEntities.size());
 		System.out.println("Mouse: " + Game.MOUSE_X + " | " + Game.MOUSE_Y);
 		
 		if (Game.RUN_SERVER && Game.FRAME_COUNT % 60 == 0) { debugToServer(); }

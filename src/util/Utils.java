@@ -58,29 +58,4 @@ public class Utils {
 		}
 	}
 	
-	public static void drawSquare (float x, float y, int width, int height) {
-		
-		int xScroll = Logic.xScroll;
-		int yScroll = Logic.yScroll;
-		
-		glBegin(GL_QUADS);
-	        glVertex2f(x - xScroll, y - yScroll);
-			glVertex2f(x + width - xScroll, y - yScroll);
-			glVertex2f(x + width - xScroll, y + height - yScroll);
-			glVertex2f(x - xScroll, y + height - yScroll);
-		glEnd();
-	}
-	
-	public static void drawLineH (float x, float y, int length) {
-		
-		int xScroll = Logic.xScroll;
-		int yScroll = Logic.yScroll;
-		
-		glBegin(GL_LINES);
-        	glVertex2f(x - xScroll, y - yScroll);
-			glVertex2f(x + length - xScroll, y - yScroll);
-		glEnd();
-		
-	}
-	
 }

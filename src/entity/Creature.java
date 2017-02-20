@@ -8,25 +8,24 @@ import logic.Game;
 public class Creature extends Entity {
 
 	private Map<Stat, Integer> stats;
-	private int currentHp = 10;
+	private int currentHp;
 
-	public Creature(float x, float y, float dx, float dy, int width, int height, int age, Map<Stat, Integer> stats) {
-		super(x, y, dx, dy, width, height, age);
+	public Creature(float x, float y, float dx, float dy, int width, int height, Map<Stat, Integer> stats) {
+		super(x, y, dx, dy, width, height);
 		this.stats = stats;
+		this.currentHp = stats.get(Stat.HP);
 	}
 	
 	public Creature(float x, float y, float dx, float dy) {
-		super(x, y, dx, dy, 20, 20, 0);
+		super(x, y, dx, dy, 20, 20);
 		this.stats = Stat.defaultStats;
+		this.currentHp = stats.get(Stat.HP);
 	}
 
 	public Creature(float x, float y) {
-		super(x, y, 0, 0, 20, 20, 0);
+		super(x, y, 0, 0, 20, 20);
 		this.stats = Stat.defaultStats;
-	}
-
-	public Creature() {
-		super();
+		this.currentHp = stats.get(Stat.HP);
 	}
 	
 	public void draw() {

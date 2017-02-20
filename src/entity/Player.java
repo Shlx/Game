@@ -16,9 +16,9 @@ public class Player extends Creature {
 	private Map<Stat, Integer> statsFromItems;
 	private int level, xp;
 
-	public Player(float x, float y, float dx, float dy, int width, int height, int age, Map<Stat, Integer> stats,
+	public Player(float x, float y, float dx, float dy, int width, int height, Map<Stat, Integer> stats,
 			ArrayList<Skill> skills, ArrayList<Item> items, Map<Stat, Integer> statsFromItems, int level, int xp) {
-		super(x, y, dx, dy, width, height, age, stats);
+		super(x, y, dx, dy, width, height, stats);
 		this.skills = skills;
 		this.items = items;
 		this.statsFromItems = statsFromItems;
@@ -79,19 +79,18 @@ public class Player extends Creature {
 		super.draw();
 	}
 	
+	@Override
 	public void checkCollisions() {
 		for (Entity e : Game.activeEntities) {
 			
 			// Collision with money: collect money
-			
-//			if (e instanceof Money) {
-				if (this.collide(e)) {
+				
+			if (this.collide(e)) {	
 					
-					if (e instanceof Money ) {Game.money += ((Money) e).getAmount();
-					e.delete();}
+				if (e instanceof Money ) {Game.money += ((Money) e).getAmount();			
+				e.delete();}
 					
-				}
-//			}
+			}
 		}
 	}
 

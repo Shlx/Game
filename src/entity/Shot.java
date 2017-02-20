@@ -7,11 +7,11 @@ import static util.Utils.*;
 public class Shot extends Entity {
 
 	public Shot(float x, float y, float dx, float dy) {	
-		super(x, y, dx, dy, 3, 3, 0);
+		super(x, y, dx, dy, 3, 3);
 	}
 	
 	public Shot(float x, float y) {	
-		super(x, y, 0, 0, 3, 3, 0);
+		super(x, y, 0, 0, 3, 3);
 	}
 	
 	public void draw() {
@@ -34,10 +34,9 @@ public class Shot extends Entity {
 		
 	}
 	
+	@Override
 	public void checkCollisions() {
 		for (Entity e : Game.activeEntities) {
-			
-			// Collision with money: collect money
 			
 			if (e instanceof Enemy) {
 				if (this.collide(e)) {

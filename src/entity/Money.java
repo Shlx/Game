@@ -6,13 +6,13 @@ public class Money extends Entity {
 
 	int amount;
 
-	public Money(float x, float y, float dx, float dy, int width, int height, int age, int amount) {
-		super(x, y, dx, dy, width, height, age);
+	public Money(float x, float y, float dx, float dy, int width, int height, int amount) {
+		super(x, y, dx, dy, width, height);
 		this.amount = amount;
 	}
 	
 	public Money(float x, float y, int amount) {
-		super(x, y, 3, 3, 15, 15, 0);
+		super(x, y, 3, 3, 15, 15);
 		this.amount = amount;
 	}
 	
@@ -31,6 +31,11 @@ public class Money extends Entity {
 	public void draw() {
 		glColor("yellow");
 		super.draw();
+	}
+	
+	@Override
+	public void checkCollisions() {
+		// TODO
 	}
 	
 	////////// GETTERS / SETTERS //////////

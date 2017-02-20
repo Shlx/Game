@@ -1,23 +1,19 @@
 package tile;
 
-import static util.Utils.drawSquare;
+import static renderer.Renderer.drawSquare;
 import static util.Utils.glColor;
 
+import gameobject.GameObject;
 import logic.Game;
 
-public class Tile {
+public class Tile extends GameObject {
 
-	private int x, y;
+	private static int size = Game.TILE_SIZE;
+	
 	private boolean walkable;
-	private int size = Game.TILE_SIZE;
 	
 	public Tile(int x, int y, boolean walkable) {
-		this.x = x;
-		this.y = y;
-		this.walkable = walkable;
-	}
-	
-	public Tile(boolean walkable) {
+		super(x, y, size, size);
 		this.walkable = walkable;
 	}
 	
@@ -33,22 +29,6 @@ public class Tile {
 	}
 
 	////////// GETTERS / SETTERS //////////
-	
-	public int getX() {
-		return x;
-	}
-
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public void setY(int y) {
-		this.y = y;
-	}
 
 	public boolean isWalkable() {
 		return walkable;

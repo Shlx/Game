@@ -1,57 +1,25 @@
 package entity;
 
 import logic.Game;
-import tile.Tile;
 
-import static util.Utils.*;
+import static renderer.Renderer.drawSquare;
 
-import items.Item;
+import gameobject.GameObject;
 
-//Entity root class. Pretty much everything extends this
-
-public class Entity {
+public class Entity extends GameObject {
 	
-	// Position and speed
-	private float x, y, dx, dy;
-	
-	private int width, height, age;
+	private float dx, dy;	
+	private int age;
 
-	public Entity(float x, float y, float dx, float dy, int width, int height, int age) {
-		this.x = x;
-		this.y = y;
+	public Entity(float x, float y, float dx, float dy, int width, int height) {
+		super(x, y, width, height);
 		this.dx = dx;
 		this.dy = dy;
-		this.width = width;
-		this.height = height;
-		this.age = age;
+		this.age = 0;
 		
 		// Add the entity to the 'spawn' list
 		
 		Game.spawnEntities.add(this);
-	}
-	
-	// Instantiate with default width and height of 20
-	
-	public Entity(float x, float y, float dx, float dy) {
-		this(x, y, dx, dy, 20, 20, 0);
-	}
-	
-	// TODO: What was this for?
-	
-	public Entity(float x, float y, float dx, float dy, Item item) {
-		this(x, y, dx, dy, 10, 10, 0);
-	}
-	
-	// Instantiate with default width, height and speed
-	
-	public Entity(float x, float y) {
-		this(x, y, 0, 0, 20, 20, 0);
-	}
-	
-	// TODO: What would you need this for?
-
-	public Entity() {
-		this(0, 0, 0, 0, 20, 20, 0);
 	}
 	
 	// Add the entity to the 'delete' list
@@ -66,10 +34,14 @@ public class Entity {
 	
 	public void nextFrame() {
 		this.setAge(this.getAge() + 1);	
+		
+		if (this.getAge() > Game.ENTITY_MAX_AGE) {
+			
+			this.delete();
+			
+		}
+		
 		this.move();
-	}
-	
-	public void checkCollisions() {
 		
 	}
 	
@@ -78,28 +50,7 @@ public class Entity {
 		int sizeX = Game.map.getSizeX();
 		int sizeY = Game.map.getSizeY();
 		
-		// Collision with walls etc.
-		// TODO: Make this good
-		
-		for (Object o : Game.collisionEntities) {
-			
-			Tile t = null;
-			Entity e = null;
-			
-			if (o instanceof Entity) { 
-				e = (Entity) o;
-				
-			} else if (o instanceof Tile) {
-				t = (Tile) o;
-				
-			}
-			
-			if (this.collide(e) || this.collide(t)) {
-				this.dx = 0;
-				this.dy = 0;
-			}
-			
-		}
+		this.checkWallCollisions();
 			
 		// Move the entity by its speed
 		
@@ -115,6 +66,26 @@ public class Entity {
 		if (this.getY() + this.getHeight() > sizeY) { this.setY(sizeY - this.getHeight()); }
 		
 	}
+	
+	public void checkWallCollisions() {
+		
+		// Collision with unpassable tiles
+		// TODO: Make this good
+		
+		for (GameObject go : Game.collisionEntities) {
+			
+			if (this.collide(go)) {
+				
+				if (this.collideLeft(go)) { System.out.println("left"); this.setRight(go.getLeft()); this.setDx(0); }
+				if (this.collideRight(go)) { System.out.println("right"); this.setLeft(go.getRight()); this.setDx(0); }
+				if (this.collideTop(go)) { System.out.println("top"); this.setBottom(go.getTop()); this.setDy(0); }
+				if (this.collideBottom(go)) { System.out.println("bot"); this.setTop(go.getBottom()); this.setDy(0); }
+				
+			}	
+		}	
+	}
+	
+	public void checkCollisions() {}
 	
 	// Recalculate speed so the entity moves towards some coordinates
 	
@@ -154,73 +125,42 @@ public class Entity {
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 		
 	    // set the color of the quad (R,G,B,A)
- 
-	    // draw quad
+		
 		drawSquare(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-//	    glBegin(GL_QUADS);
-//	        glVertex2f(this.getX(), this.getY());
-//			glVertex2f(this.getX() + this.getWidth(), this.getY());
-//			glVertex2f(this.getX() + this.getWidth(), this.getY() + this.getHeight());
-//			glVertex2f(this.getX(), this.getY() + this.getHeight());
-//	    glEnd();
 		
 	}
 	
-	// TODO: Make superclass of Entity and Tile
-	
-	public boolean collide(Entity e) {
-		if (e == null) { return false; }
+	public boolean collide(GameObject go) {
+		if (go == null) { return false; }
 		
-		return  this.getY() <= e.getY() + e.getHeight() &&
-				this.getY() + this.getHeight() >= e.getY() &&
-				this.getX() <= e.getX() + e.getWidth() &&
-				this.getX() + this.getWidth() >= e.getX();	
+		return  this.getY() < go.getY() + go.getHeight() &&
+				this.getY() + this.getHeight() > go.getY() &&
+				this.getX() < go.getX() + go.getWidth() &&
+				this.getX() + this.getWidth() > go.getX();	
 	}
 	
-	public boolean collide(Tile t) {
-		if (t == null) { return false; }
-		
-		return  this.getY() <= t.getY() + t.getSize() &&
-				this.getY() + this.getHeight() >= t.getY() &&
-				this.getX() <= t.getX() + t.getSize() &&
-				this.getX() + this.getWidth() >= t.getX();	
+	public boolean collideTop(GameObject go) {
+		return this.getBottom() > go.getTop();
 	}
 	
-	public void setPosition(float x, float y) {
-		this.x = x;
-		this.y = y;
+	public boolean collideBottom(GameObject go) {
+		return this.getTop() > go.getBottom();
+	}
+	
+	public boolean collideLeft(GameObject go) {
+		return this.getRight() > go.getLeft();
+	}
+	
+	public boolean collideRight(GameObject go) {
+		return this.getLeft() > go.getRight();
 	}
 	
 	public void setSpeed(float dx, float dy) {
-		this.dx = dx;
-		this.dy = dy;
-	}
-	
-	public float getCenterX() {
-		return this.getX() + this.getWidth() / 2;
-	}
-	
-	public float getCenterY() {
-		return this.getY() + this.getHeight() / 2;
+		this.setDx(dx);
+		this.setDy(dy);
 	}
 	
 	////////// GETTERS / SETTERS //////////
-
-	public float getX() {
-		return x;
-	}
-
-	public void setX(float x) {
-		this.x = x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
-	}
 
 	public float getDx() {
 		return dx;
@@ -238,22 +178,6 @@ public class Entity {
 		this.dy = dy;
 	}
 	
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
 	public int getAge() {
 		return age;
 	}

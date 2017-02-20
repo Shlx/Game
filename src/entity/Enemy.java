@@ -9,15 +9,16 @@ import items.Item;
 import items.Stat;
 import logic.Game;
 import static util.Utils.*;
+import static renderer.Renderer.drawLineH;
 
 public class Enemy extends Creature {
 	
 	private float[] color = { random.nextFloat(), random.nextFloat(), random.nextFloat() };
 	private Drop drop;
 
-	public Enemy(float x, float y, float dx, float dy, int width, int height, int age, Map<Stat, Integer> stats,
+	public Enemy(float x, float y, float dx, float dy, int width, int height, Map<Stat, Integer> stats,
 			Drop drop) {
-		super(x, y, dx, dy, width, height, age, stats);
+		super(x, y, dx, dy, width, height, stats);
 		this.drop = Drop.defaultDrop;
 	}
 	
@@ -57,6 +58,11 @@ public class Enemy extends Creature {
 	
 	public void moveTowardsMouse() {
 		super.moveTowardsMouse(getStraightSpeed());
+	}
+	
+	@Override
+	public void checkCollisions() {
+		// TODO
 	}
 	
 	public void draw() {
