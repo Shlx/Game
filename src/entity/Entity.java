@@ -49,13 +49,14 @@ public class Entity extends GameObject {
 		
 		int sizeX = Game.map.getSizeX();
 		int sizeY = Game.map.getSizeY();
-		
-		this.checkWallCollisions();
 			
 		// Move the entity by its speed
 		
 		this.setX(this.getX() + this.getDx());
+		this.checkWallCollisionsX();
+		
 		this.setY(this.getY() + this.getDy());
+		this.checkWallCollisionsY();
 	
 		// Don't let it move out of bounds
 
@@ -67,22 +68,50 @@ public class Entity extends GameObject {
 		
 	}
 	
-	public void checkWallCollisions() {
+	public void checkWallCollisionsX() {
 		
 		// Collision with unpassable tiles
-		// TODO: Make this good
 		
 		for (GameObject go : Game.collisionEntities) {
 			
 			if (this.collide(go)) {
 				
-				if (this.collideLeft(go)) { System.out.println("left"); this.setRight(go.getLeft()); this.setDx(0); }
-				if (this.collideRight(go)) { System.out.println("right"); this.setLeft(go.getRight()); this.setDx(0); }
-				if (this.collideTop(go)) { System.out.println("top"); this.setBottom(go.getTop()); this.setDy(0); }
-				if (this.collideBottom(go)) { System.out.println("bot"); this.setTop(go.getBottom()); this.setDy(0); }
+				if (this.collideLeft(go)) { this.setRight(go.getLeft()); }
+				if (this.collideRight(go)) { this.setLeft(go.getRight()); }
 				
 			}	
 		}	
+	}
+
+	public boolean collideLeft(GameObject go) {
+		return this.getRight() > go.getLeft() && this.getDx() > 0;
+	}
+	
+	public boolean collideRight(GameObject go) {
+		return this.getLeft() < go.getRight() && this.getDx() < 0;
+	}
+
+	public void checkWallCollisionsY() {
+		
+		// Collision with unpassable tiles
+		
+		for (GameObject go : Game.collisionEntities) {
+			
+			if (this.collide(go)) {
+				
+				if (this.collideTop(go)) { this.setBottom(go.getTop()); }
+				if (this.collideBottom(go)) { this.setTop(go.getBottom()); }
+				
+			}	
+		}	
+	}
+	
+	public boolean collideTop(GameObject go) {
+		return this.getBottom() > go.getTop() && this.getDy() > 0;
+	}
+	
+	public boolean collideBottom(GameObject go) {
+		return this.getTop() < go.getBottom() && this.getDy() < 0;
 	}
 	
 	public void checkCollisions() {}
@@ -137,22 +166,6 @@ public class Entity extends GameObject {
 				this.getY() + this.getHeight() > go.getY() &&
 				this.getX() < go.getX() + go.getWidth() &&
 				this.getX() + this.getWidth() > go.getX();	
-	}
-	
-	public boolean collideTop(GameObject go) {
-		return this.getBottom() > go.getTop();
-	}
-	
-	public boolean collideBottom(GameObject go) {
-		return this.getTop() > go.getBottom();
-	}
-	
-	public boolean collideLeft(GameObject go) {
-		return this.getRight() > go.getLeft();
-	}
-	
-	public boolean collideRight(GameObject go) {
-		return this.getLeft() > go.getRight();
 	}
 	
 	public void setSpeed(float dx, float dy) {

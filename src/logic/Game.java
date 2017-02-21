@@ -217,6 +217,10 @@ public class Game {
 				
 				character.setDy(0);
 				if (UP_HELD) { character.setDy(-character.getSpeed()); }
+				
+				// TODO: Can't detect if right or left was pressed first
+				// When pressing right -> left -> down you will move to the right instead of left
+				
 				if (LEFT_HELD) { character.setDx(-character.getSpeed()); }
 				if (RIGHT_HELD) { character.setDx(character.getSpeed()); }
 				
